@@ -18,7 +18,15 @@ namespace Sub.IdentityGovernance
 
             var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
-            channel.QueueDeclare("EngagementOrders", exclusive: false);
+            channel.ExchangeDeclare(exchange: "amq.fanout", type: ExchangeType.Fanout, true, false, null);
+            var queueName = channel.QueueDeclare("EngagementOrderQueue_IG", durable: true, autoDelete: false, exclusive: false);
+            
+            // take 1 message per consumer
+            //channel.BasicQos(0, 1, false);
+            channel.QueueBind(queue: queueName,
+                exchange: "amq.fanout",
+                routingKey: "EngagementOrders");
+
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, eventArgs) =>
             {
@@ -28,7 +36,7 @@ namespace Sub.IdentityGovernance
                 Console.WriteLine($"Received: {message}");
             };
 
-            channel.BasicConsume(queue: "EngagementOrders", autoAck: true, consumer: consumer);
+            channel.BasicConsume(queue: "EngagementOrderQueue_IG", autoAck: true, consumer: consumer);
 
             Console.ReadKey();
         }

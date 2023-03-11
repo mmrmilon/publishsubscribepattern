@@ -2,6 +2,7 @@
 using Pub.ResourceEngagement.Dtos;
 using Pub.ResourceEngagement.Entities;
 using Pub.ResourceEngagement.Persistence;
+using RabbitMQ.Client;
 
 namespace Pub.ResourceEngagement.Services
 {
@@ -33,7 +34,7 @@ namespace Pub.ResourceEngagement.Services
             await _dbContext.SaveChangesAsync(default);
 
             //publish message
-            _publisherService.PublishMessage(engagementOrder, string.Empty, string.Empty, "EngagementOrders");
+            _publisherService.PublishMessage(engagementOrder);
 
             return engagementOrder.Id;
         }
@@ -60,7 +61,7 @@ namespace Pub.ResourceEngagement.Services
             //publish message
             if (result is not null)
             {
-                _publisherService.PublishMessage(engagementOrder, "", "", "");
+                _publisherService.PublishMessage(engagementOrder);
             }
 
             return result;
