@@ -23,15 +23,7 @@ namespace Pub.ResourceEngagement.Services
         {
             try
             {
-                var factory = new ConnectionFactory
-                {
-                    HostName = _publisherOptions.HostName
-                };
-
-                var connection = factory.CreateConnection();
-                using var channel = connection.CreateModel();
-
-                //using var channel = _connection.CreateModel();
+                using var channel = _connection.CreateModel();
 
                 channel.ExchangeDeclare(_publisherOptions.ExchangeName, _publisherOptions.ExchangeType, true, false, null);
                 foreach (var queue in _publisherOptions.QueueList)
@@ -59,8 +51,7 @@ namespace Pub.ResourceEngagement.Services
             {
                 HostName = _publisherOptions.HostName,
                 UserName = _publisherOptions.UserName,
-                Password = _publisherOptions.Password,
-                //Port = _publisherOptions.Port
+                Password = _publisherOptions.Password
             };
 
             return factory.CreateConnection();
