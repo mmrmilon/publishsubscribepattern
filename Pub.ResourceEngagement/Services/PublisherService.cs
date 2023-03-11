@@ -16,10 +16,10 @@ namespace Pub.ResourceEngagement.Services
         {
             _logger = logger;
             _publisherOptions = options.Value;
-            //_connection = GetConnection();
+            _connection = GetConnection();
         }
 
-        public void PublishMessage<T>(T message, string exchangeName, string exchangeType, string routeKey)
+        public void PublishMessage<T>(T message)
         {
             try
             {
@@ -33,8 +33,11 @@ namespace Pub.ResourceEngagement.Services
 
                 //using var channel = _connection.CreateModel();
 
-                //channel.ExchangeDeclare(exchangeName, exchangeType, true, false, null);
-                channel.QueueDeclare("EngagementOrders", exclusive: false);
+                channel.ExchangeDeclare(_publisherOptions.ExchangeName, _publisherOptions.ExchangeType, true, false, null);
+                foreach (var queue in _publisherOptions.QueueList)
+                {
+                    channel.QueueDeclare(queue, durable: true, autoDelete: false, exclusive: false);
+                }
 
                 var jsonMessage = JsonConvert.SerializeObject(message);
                 var byteMessage = Encoding.UTF8.GetBytes(jsonMessage);
@@ -42,7 +45,7 @@ namespace Pub.ResourceEngagement.Services
                 var properties = channel.CreateBasicProperties();
                 properties.Persistent = true;
 
-                channel.BasicPublish(exchange: exchangeName, routingKey: routeKey, body: byteMessage);
+                channel.BasicPublish(exchange: _publisherOptions.ExchangeName, routingKey: _publisherOptions.ExchangeType, properties, body: byteMessage);
             }
             catch(Exception ex)
             {
@@ -57,7 +60,7 @@ namespace Pub.ResourceEngagement.Services
                 HostName = _publisherOptions.HostName,
                 UserName = _publisherOptions.UserName,
                 Password = _publisherOptions.Password,
-                Port = _publisherOptions.Port
+                //Port = _publisherOptions.Port
             };
 
             return factory.CreateConnection();
