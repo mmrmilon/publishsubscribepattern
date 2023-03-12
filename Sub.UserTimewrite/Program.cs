@@ -15,9 +15,11 @@ namespace Sub.UserTimewrite
 
             var config = builder.Build();
             string hostName = config["PublisherSettings:HostName"]!.ToString();
+            string userName = config["PublisherSettings:UserName"]!.ToString();
+            string password = config["PublisherSettings:Password"]!.ToString();
             string exchangeName = config["PublisherSettings:ExchangeName"]!.ToString();
             string exchangeType = config["PublisherSettings:ExchangeType"]!.ToString();
-            string routeKey = config["PublisherSettings:RouteKey"]!.ToString();
+            string routingKey = config["PublisherSettings:RoutingKey"]!.ToString();
             string queueName = config["PublisherSettings:QueueName"]!.ToString();
 
             Console.WriteLine("User Timewrite Engine");
@@ -25,17 +27,26 @@ namespace Sub.UserTimewrite
 
             var factory = new ConnectionFactory
             {
-                HostName = hostName
+                HostName = hostName,
+                UserName = userName,
+                Password = password
             };
 
             var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
             channel.ExchangeDeclare(exchange: exchangeName, type: exchangeType, true, false, null);
-            var queueDeclare = channel.QueueDeclare(queueName, durable: true, autoDelete: false, exclusive: false);
-            
-            // take 1 message per consumer
-            //channel.BasicQos(0, 1, false);
-            channel.QueueBind(queue: queueDeclare, exchange: exchangeName, routingKey: routeKey);
+
+            string queueDeclare;
+            if (string.IsNullOrEmpty(routingKey))
+            {
+                queueDeclare = channel.QueueDeclare().QueueName;
+            }
+            else
+            {
+                queueDeclare = channel.QueueDeclare(queueName, durable: true, autoDelete: false, exclusive: false).QueueName;
+            }
+
+            channel.QueueBind(queue: queueDeclare, exchange: exchangeName, routingKey: routingKey);
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, eventArgs) =>
@@ -46,7 +57,7 @@ namespace Sub.UserTimewrite
                 Console.WriteLine($"Received: {message}");
             };
 
-            channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
+            channel.BasicConsume(queue: queueDeclare, autoAck: true, consumer: consumer);
 
             Console.ReadKey();
         }
