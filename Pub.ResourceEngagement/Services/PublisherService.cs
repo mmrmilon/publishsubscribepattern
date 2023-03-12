@@ -26,9 +26,13 @@ namespace Pub.ResourceEngagement.Services
                 using var channel = _connection.CreateModel();
 
                 channel.ExchangeDeclare(_publisherOptions.ExchangeName, _publisherOptions.ExchangeType, true, false, null);
-                foreach (var queue in _publisherOptions.QueueList)
+
+                if (!string.IsNullOrEmpty(_publisherOptions.RoutingKey))
                 {
-                    channel.QueueDeclare(queue, durable: true, autoDelete: false, exclusive: false);
+                    foreach (var queue in _publisherOptions.QueueList)
+                    {
+                        channel.QueueDeclare(queue, durable: true, autoDelete: false, exclusive: false);
+                    }
                 }
 
                 var jsonMessage = JsonConvert.SerializeObject(message);
@@ -37,7 +41,7 @@ namespace Pub.ResourceEngagement.Services
                 var properties = channel.CreateBasicProperties();
                 properties.Persistent = true;
 
-                channel.BasicPublish(exchange: _publisherOptions.ExchangeName, routingKey: _publisherOptions.ExchangeType, properties, body: byteMessage);
+                channel.BasicPublish(exchange: _publisherOptions.ExchangeName, routingKey: _publisherOptions.RoutingKey, basicProperties: properties, body: byteMessage);                
             }
             catch(Exception ex)
             {

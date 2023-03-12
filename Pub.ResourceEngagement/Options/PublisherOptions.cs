@@ -14,6 +14,8 @@
 
         public string? ExchangeType { get; set; }
 
+        public string? RoutingKey { get; set; }
+
         public List<string> QueueList { get; set; } = new List<string>();
     }
 }
