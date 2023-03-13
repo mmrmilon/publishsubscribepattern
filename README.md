@@ -23,7 +23,7 @@ Please find below the process diagram illustrating how pubsub is working:
 ![alt tag](https://github.com/mmrmilon/publishsubscribepattern/blob/main/images/messaging_broker.jpg)
 
 # Running the Application
-Since we have already implemented the publisher and subscribers applications based on our agenda and scenarios in this repository, let's now look at how we can run them on our local machine.
+Since we have already implemented the publisher and subscribers applications based on our agenda and scenarios in this repository, you just need to **clone** it using <code>git clone</code> in your local machine, let's now look at how we can run them on our local machine.
  - **Running RabbitMQ in Docker** - Assuming that we have already set up Docker on our machine if not then find instructions from [**here**](https://www.docker.com/get-started/)
     > - To spin up RabbitMQ server open command-line and use the <code>docker run</code> command as below
     >
