@@ -22,6 +22,20 @@ To implement the Pub/Sub pattern based on our agenda, we will use RabbitMQ as a 
 Please find below the process diagram illustrating how pubsub is working:
 ![alt tag](https://github.com/mmrmilon/publishsubscribepattern/blob/main/images/messaging_broker.jpg)
 
+# Technologies
+  > - ASP.NET Core 7
+  > - Entity Framework Core 7
+  > - xUnit, Moq
+  > - RabbitMQ
+  > - Docker
+  > - Postman
+  
+# Getting Started
+The publisher project is configured to use an in-memory database by default. This ensures that all users will be able to run the solution without needing to set up SQL Server.
+ > - <code> "UseInMemoryDatabase": true </code>
+ > - We have database configuration in <code>appsettings.json</code>
+ > - We have RabbitMQ configuration in <code>appsettings.json</code> like host, user, password etc.
+ 
 # Running the Application
 Since we have already implemented the publisher and subscribers applications based on our agenda and scenarios in this repository, you just need to **clone** it using <code>git clone</code> in your local machine, let's now look at how we can run them on our local machine.
  - **Running RabbitMQ in Docker** - Assuming that we have already set up Docker on our machine if not then find instructions from [**here**](https://www.docker.com/get-started/)
