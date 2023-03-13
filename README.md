@@ -12,12 +12,14 @@ Implement the concept of Publish/Subscribe pattern. It should:-
  > - Transport that data to a set of subscribers
  > - The subscribers should be able to display the transformed data
 
+# Solutioning
 To implement the Pub/Sub pattern based on our agenda, we will use RabbitMQ as a message broker. The .Net Core Web API will act as the publisher, and we will have at least two console applications serving as subscribers. As an addition to our implementation of the Pub/Sub pattern using RabbitMQ as the message broker, let me provide a part of real scenario from the current application I'm working on. For this scenario, we have three applications:
 
   > - ResourceEngagement(publisher) - manages resource engagement information and publishes it to the subscribers
   > - IdentityGovernance(subscriber) - consumes the published message and creates a resource profile in the organization's active directory 
   > - UserTimewrite(subscriber) - consumes the message to store engagement details and verify the resources' input hours.
 
+Please find below the process diagram illustrating how pubsub is working:
 ![alt tag](https://github.com/mmrmilon/publishsubscribepattern/blob/main/images/messaging_broker.jpg)
 
 # Running the Application
